@@ -35,7 +35,7 @@ function Ad({ size }: { size: "sm" | "md" | "lg" }) {
             className="rounded-lg object-cover"
           />
         </div>
-        <div className="flex item-center gap-4">
+        <div className="flex items-center gap-2">
           <Image
             src="https://images.pexels.com/photos/955137/pexels-photo-955137.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
             alt=""
