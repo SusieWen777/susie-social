@@ -1,3 +1,5 @@
+import prisma from "@/lib/client";
+import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import {
   MdEmojiEmotions,
@@ -23,17 +25,19 @@ function AddPost() {
       {/* Post */}
       <div className="flex-1">
         {/* Text Input */}
-        <div className="flex gap-4">
+        <form action="" className="flex gap-4">
           <textarea
             placeholder="What's on your mind"
             className="bg-slate-100 rounded-lg flex-1 p-2"
+            name="desc"
           ></textarea>
           <MdEmojiEmotions
             className="cursor-pointer self-end"
             size={30}
             color="#FFB200"
           />
-        </div>
+          <button>Send</button>
+        </form>
         {/* Post options */}
         <div className="flex items-center gap-4 mt-4 text-gray-400  flex-wrap">
           <div className="flex items-center gap-2 cursor-pointer">
