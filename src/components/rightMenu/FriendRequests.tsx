@@ -1,8 +1,21 @@
-import Image from "next/image";
+import prisma from "@/lib/client";
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import FriendRequestList from "./FriendRequestList";
 
-function FriendRequests() {
+async function FriendRequests() {
+  const { userId: currentUserId } = auth();
+  if (!currentUserId) return null;
+
+  const requests = await prisma.followRequest.findMany({
+    where: { receiverId: currentUserId },
+    include: {
+      sender: true,
+    },
+  });
+
+  if (requests.length === 0) return null;
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4">
       {/* Title */}
@@ -13,74 +26,7 @@ function FriendRequests() {
         </Link>
       </div>
       {/* Friend Request */}
-      <div className="flex items-center justify-between gap-4">
-        {/* User image and name */}
-        <div className="flex gap-2 items-center">
-          <Image
-            src="https://images.pexels.com/photos/1556691/pexels-photo-1556691.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold">Wendell Valenzuela</span>
-        </div>
-        {/* Actions */}
-        <div className="flex gap-2 items-center">
-          <FaCheckCircle
-            color="rgb(59 130 246)"
-            size={20}
-            className="cursor-pointer"
-          />
-          <FaTimesCircle color="gray" size={20} className="cursor-pointer" />
-        </div>
-      </div>
-      {/* Friend Request */}
-      <div className="flex items-center justify-between gap-4">
-        {/* User image and name */}
-        <div className="flex gap-2 items-center">
-          <Image
-            src="https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold">Casey Galloway</span>
-        </div>
-        {/* Actions */}
-        <div className="flex gap-2 items-center">
-          <FaCheckCircle
-            color="rgb(59 130 246)"
-            size={20}
-            className="cursor-pointer"
-          />
-          <FaTimesCircle color="gray" size={20} className="cursor-pointer" />
-        </div>
-      </div>
-      {/* Friend Request */}
-      <div className="flex items-center justify-between gap-4">
-        {/* User image and name */}
-        <div className="flex gap-2 items-center">
-          <Image
-            src="https://images.pexels.com/photos/296282/pexels-photo-296282.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt=""
-            width={40}
-            height={40}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span className="font-semibold">Earlene Wong</span>
-        </div>
-        {/* Actions */}
-        <div className="flex gap-2 items-center">
-          <FaCheckCircle
-            color="rgb(59 130 246)"
-            size={20}
-            className="cursor-pointer"
-          />
-          <FaTimesCircle color="gray" size={20} className="cursor-pointer" />
-        </div>
-      </div>
+      <FriendRequestList requests={requests} />
     </div>
   );
 }

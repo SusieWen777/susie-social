@@ -5,12 +5,10 @@ import { useOptimistic, useState } from "react";
 
 function UserInfoCardInteraction({
   userId,
-  currentUserId,
   isUserBlocked,
   isFollowing,
   isFollowingSent,
 }: {
-  currentUserId: string;
   userId: string;
   isUserBlocked: boolean;
   isFollowing: boolean;

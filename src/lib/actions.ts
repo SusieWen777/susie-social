@@ -80,6 +80,53 @@ export const switchBlock = async (userId: string) => {
     }
   } catch (error) {
     console.log(error);
-    throw new Error("Something went wrong!");
+    throw new Error("Something went wrong switching block!");
+  }
+};
+
+export const acceptFollowRequest = async (
+  requestId: number,
+  userId: string
+) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.followRequest.delete({
+      where: {
+        id: requestId,
+      },
+    });
+
+    await prisma.follower.create({
+      data: {
+        followerId: userId,
+        followingId: currentUserId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong accepting request!");
+  }
+};
+
+export const rejectFollowRequest = async (
+  requestId: number,
+  userId: string
+) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.followRequest.delete({
+      where: {
+        id: requestId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong rejecting request!");
   }
 };
