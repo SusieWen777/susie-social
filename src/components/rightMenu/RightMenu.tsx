@@ -1,17 +1,23 @@
-import Ad from "./Ad";
+import { User } from "@prisma/client";
+import Ad from "../Ad";
 import Birthdays from "./Birthdays";
 import FriendRequests from "./FriendRequests";
 import UserInfoCard from "./UserInfoCard";
 import UserMediaCard from "./UserMediaCard";
+import { Suspense } from "react";
 
-function RightMenu({ userId }: { userId?: string }) {
+function RightMenu({ user }: { user?: User }) {
   //using userId to differentiate the homepage and profile page
   return (
     <div className="flex flex-col gap-6">
-      {userId ? (
+      {user ? (
         <>
-          <UserInfoCard userId={userId} />
-          <UserMediaCard userId={userId} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserInfoCard user={user} />
+          </Suspense>
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserMediaCard user={user} />
+          </Suspense>
         </>
       ) : null}
       <FriendRequests />

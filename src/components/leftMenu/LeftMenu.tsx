@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ProfileCard from "./ProfileCard";
 import { IoMdImages, IoMdSettings } from "react-icons/io";
-import Ad from "./Ad";
+import Ad from "../Ad";
 
 function LeftMenu({ type }: { type: "home" | "profile" }) {
   return (
