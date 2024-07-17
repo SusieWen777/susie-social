@@ -10,6 +10,7 @@ import {
   MdOutlineEmojiEvents,
   MdPoll,
 } from "react-icons/md";
+import { RxCrossCircled } from "react-icons/rx";
 import { CldUploadWidget } from "next-cloudinary";
 import AddPostButton from "./AddPostButton";
 import { addPost } from "@/lib/actions";
@@ -24,9 +25,11 @@ function AddPost() {
   ) => {
     try {
       await addPost(payload.formData, payload.img);
+      setImg(null);
       return { success: true, error: "" };
     } catch (error) {
       console.log(error);
+      setImg(null);
       if (error instanceof Error) {
         return { success: false, error: error.message };
       } else {
@@ -86,6 +89,7 @@ function AddPost() {
           <CldUploadWidget
             uploadPreset="social"
             onSuccess={(result) => {
+              console.log(result.info);
               setImg(result.info);
             }}
           >
@@ -130,6 +134,26 @@ function AddPost() {
             Poll
           </div>
         </div>
+
+        {img && (
+          <div className="relative w-24">
+            <Image
+              src={img.secure_url}
+              alt=""
+              width={96}
+              height={64}
+              className="w-24 h-16 object-cover rounded-md mt-4"
+            />
+            <div className="bg-gray-100 absolute w-4 h-4 flex items-center justify-center rounded-full -top-1 -right-1">
+              <RxCrossCircled
+                size={12}
+                color="gray"
+                className="cursor-pointer"
+                onClick={() => setImg(null)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
