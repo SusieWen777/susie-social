@@ -4,10 +4,11 @@ import Image from "next/image";
 import { MdEmojiEmotions } from "react-icons/md";
 import { IoMdMore } from "react-icons/io";
 import { FaRegThumbsUp } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import { Comment, User } from "@prisma/client";
 import { useUser } from "@clerk/nextjs";
 import { useOptimistic, useState } from "react";
-import { addPostComment } from "@/lib/actions";
+import { addPostComment, deletePostComment } from "@/lib/actions";
 
 type CommentWithUser = Comment & { user: User };
 
@@ -24,7 +25,10 @@ function CommentList({
 
   const [optimisticComments, addOptimisticComments] = useOptimistic(
     commentState,
-    (state, value: CommentWithUser) => {
+    (state, value: CommentWithUser | number) => {
+      if (typeof value === "number") {
+        return state.filter((comment) => comment.id !== value);
+      }
       return [...state, value];
     }
   );
@@ -57,6 +61,18 @@ function CommentList({
       const createdComment = await addPostComment(postId, desc);
       setCommentState((prev) => [...prev, createdComment]);
       setDesc("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteComment = async (commentId: number) => {
+    addOptimisticComments(commentId);
+    try {
+      await deletePostComment(commentId);
+      setCommentState((prev) =>
+        prev.filter((comment) => comment.id !== commentId)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -134,7 +150,20 @@ function CommentList({
               </div>
             </div>
             {/* Icon */}
-            <IoMdMore size={24} color="gray" className="cursor-pointer" />
+            {/* <IoMdMore size={24} color="gray" className="cursor-pointer" /> */}
+            <div className="group relative">
+              <IoMdMore size={24} color="gray" className="cursor-pointer" />
+              {user?.id === comment.user.id && (
+                <div className="absolute right-0 bg-slate-50 p-2 text-xs text-gray-500 rounded-md z-50 gap-2 items-center font-medium hidden group-hover:flex">
+                  <FiTrash2 size={14} color="#0F67B1" />
+                  {/* <DeleteCommentButton commentId={comment.id} /> */}
+                  <button onClick={() => deleteComment(comment.id)}>
+                    Delete
+                  </button>
+                  ;
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>

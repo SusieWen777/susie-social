@@ -265,3 +265,39 @@ export const addPost = async (formData: FormData, img: string) => {
     throw new Error("Something went wrong adding post!");
   }
 };
+
+export const deletePost = async (postId: number) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.post.delete({
+      where: {
+        id: postId,
+      },
+    });
+    revalidatePath("/");
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong deleting post!");
+  }
+};
+
+export const deletePostComment = async (commentId: number) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+    revalidatePath("/");
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong deleting comment!");
+  }
+};
