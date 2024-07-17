@@ -2,15 +2,29 @@ import Link from "next/link";
 import ProfileCard from "./ProfileCard";
 import { IoMdImages, IoMdSettings } from "react-icons/io";
 import Ad from "../Ad";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/client";
 
-function LeftMenu({ type }: { type: "home" | "profile" }) {
+async function LeftMenu({ type }: { type: "home" | "profile" }) {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) return null;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: currentUserId,
+    },
+  });
+
+  if (!user) return null;
+
   return (
     <div className="flex flex-col gap-6">
       {type === "home" && <ProfileCard />}
       <div className="p-4 bg-white rounded-lg shadow-md text-sm text-gray-500 flex flex-col gap-2">
         {/* Posts */}
         <Link
-          href="/"
+          href={`/profile/${user.username}`}
           className="flex items-center gap-4 p-2 rounded-lg hover:bg-slate-100"
         >
           <IoMdImages size={20} color="#6C946F" />

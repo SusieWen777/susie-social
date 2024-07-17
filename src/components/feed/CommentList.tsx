@@ -160,7 +160,6 @@ function CommentList({
                   <button onClick={() => deleteComment(comment.id)}>
                     Delete
                   </button>
-                  ;
                 </div>
               )}
             </div>
