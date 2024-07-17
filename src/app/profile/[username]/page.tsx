@@ -22,7 +22,6 @@ async function ProfilePage({ params }: { params: { username: string } }) {
       },
     },
   });
-  console.log(user);
 
   if (!user) return <NotFound />;
 

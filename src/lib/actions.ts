@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
+import { z } from "zod";
 
 export const switchFollow = async (userId: string) => {
   const { userId: currentUserId } = auth();
@@ -128,5 +129,51 @@ export const rejectFollowRequest = async (
   } catch (error) {
     console.log(error);
     throw new Error("Something went wrong rejecting request!");
+  }
+};
+
+export const updateProfile = async (formData: FormData, cover: string) => {
+  formData.append("cover", cover);
+
+  const fields = Object.fromEntries(formData);
+
+  Object.keys(fields).forEach((key) => {
+    if (fields[key] === "") {
+      delete fields[key];
+    }
+  });
+
+  const Profile = z.object({
+    cover: z.string().optional(),
+    name: z.string().max(5).optional(),
+    surname: z.string().max(60).optional(),
+    description: z.string().max(255).optional(),
+    city: z.string().max(60).optional(),
+    school: z.string().max(60).optional(),
+    work: z.string().max(60).optional(),
+    website: z.string().max(255).optional(),
+  });
+
+  const validatedFields = Profile.safeParse(fields);
+
+  if (!validatedFields.success) {
+    console.log(validatedFields.error.flatten().fieldErrors);
+    throw new Error("Invalid fields!");
+  }
+
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.user.update({
+      where: {
+        id: currentUserId,
+      },
+      data: validatedFields.data,
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong updating user profile!");
   }
 };

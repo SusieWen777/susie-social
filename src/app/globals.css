@@ -9,3 +9,9 @@
 .scrollbar-hidden {
   scrollbar-width: none;
 }
+
+.no-scroll {
+  overflow-y: hidden;
+  position: fixed;
+  width: 100%;
+}
