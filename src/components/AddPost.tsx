@@ -1,6 +1,8 @@
-import prisma from "@/lib/client";
-import { auth } from "@clerk/nextjs/server";
+"use client";
+
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import { useActionState, useState } from "react";
 import {
   MdEmojiEmotions,
   MdAddPhotoAlternate,
@@ -8,14 +10,44 @@ import {
   MdOutlineEmojiEvents,
   MdPoll,
 } from "react-icons/md";
+import { CldUploadWidget } from "next-cloudinary";
+import AddPostButton from "./AddPostButton";
+import { addPost } from "@/lib/actions";
 
 function AddPost() {
+  const { user, isLoaded } = useUser();
+  const [img, setImg] = useState<any>();
+
+  const handleAddPost = async (
+    prevState: { success: boolean; error: string },
+    payload: { formData: FormData; img: string }
+  ) => {
+    try {
+      await addPost(payload.formData, payload.img);
+      return { success: true, error: "" };
+    } catch (error) {
+      console.log(error);
+      if (error instanceof Error) {
+        return { success: false, error: error.message };
+      } else {
+        return { success: false, error: "An unknown error occurred" };
+      }
+    }
+  };
+
+  const [addPostState, addPostFormAction] = useActionState(handleAddPost, {
+    success: false,
+    error: "",
+  });
+
+  if (!isLoaded) return "Loading ...";
+
   return (
     <div className="p-4 bg-white shadow-md rounded-lg flex gap-4 justify-between text-sm">
       {/* Avatar */}
       <div className="min-w-avatar">
         <Image
-          src="https://images.pexels.com/photos/367191/pexels-photo-367191.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          src={user?.imageUrl || "/noAvatar.png"}
           alt=""
           width={48}
           height={48}
@@ -25,29 +57,54 @@ function AddPost() {
       {/* Post */}
       <div className="flex-1">
         {/* Text Input */}
-        <form action="" className="flex gap-4">
+        <form
+          action={(formData) =>
+            addPostFormAction({ formData, img: img?.secure_url || "" })
+          }
+          className="flex gap-4"
+        >
           <textarea
             placeholder="What's on your mind"
             className="bg-slate-100 rounded-lg flex-1 p-2"
             name="desc"
           ></textarea>
-          <MdEmojiEmotions
-            className="cursor-pointer self-end"
-            size={30}
-            color="#FFB200"
-          />
-          <button>Send</button>
+          <div>
+            <MdEmojiEmotions
+              className="cursor-pointer self-end"
+              size={30}
+              color="#FFB200"
+            />
+            <AddPostButton />
+          </div>
         </form>
+        {addPostState.error && (
+          <p className="text-red-500">{addPostState.error}</p>
+        )}
         {/* Post options */}
         <div className="flex items-center gap-4 mt-4 text-gray-400  flex-wrap">
-          <div className="flex items-center gap-2 cursor-pointer">
-            <MdAddPhotoAlternate
-              className="cursor-pointer self-end"
-              size={20}
-              color="#6C946F"
-            />
-            Photo
-          </div>
+          {/* Upload post image */}
+          <CldUploadWidget
+            uploadPreset="social"
+            onSuccess={(result) => {
+              setImg(result.info);
+            }}
+          >
+            {({ open }) => {
+              return (
+                <button onClick={() => open()}>
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <MdAddPhotoAlternate
+                      className="cursor-pointer self-end"
+                      size={20}
+                      color="#6C946F"
+                    />
+                    Photo
+                  </div>
+                </button>
+              );
+            }}
+          </CldUploadWidget>
+
           <div className="flex items-center gap-2 cursor-pointer">
             <MdVideoCall
               className="cursor-pointer self-end"
