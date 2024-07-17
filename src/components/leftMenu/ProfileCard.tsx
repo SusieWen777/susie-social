@@ -18,8 +18,6 @@ async function ProfileCard() {
     },
   });
 
-  console.log(user);
-
   if (!user) return null;
 
   return (

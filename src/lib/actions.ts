@@ -177,3 +177,58 @@ export const updateProfile = async (formData: FormData, cover: string) => {
     throw new Error("Something went wrong updating user profile!");
   }
 };
+
+export const switchPostLike = async (postId: number) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        userId: currentUserId,
+        postId,
+      },
+    });
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          id: existingLike.id,
+        },
+      });
+    } else {
+      await prisma.like.create({
+        data: {
+          userId: currentUserId,
+          postId,
+        },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong switching post like!");
+  }
+};
+
+export const addPostComment = async (postId: number, desc: string) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    const createdComment = await prisma.comment.create({
+      data: {
+        desc,
+        postId,
+        userId: currentUserId,
+      },
+      include: {
+        user: true,
+      },
+    });
+    return createdComment;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong adding post comment!");
+  }
+};
