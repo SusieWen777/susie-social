@@ -9,7 +9,14 @@ import CommentList from "./CommentList";
 async function Comments({ postId }: { postId: number }) {
   const comments = await prisma.comment.findMany({
     where: { postId },
-    include: { user: true },
+    include: {
+      user: true,
+      likes: {
+        select: {
+          userId: true,
+        },
+      },
+    },
   });
 
   return (

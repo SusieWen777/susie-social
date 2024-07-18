@@ -3,14 +3,16 @@
 import Image from "next/image";
 import { MdEmojiEmotions } from "react-icons/md";
 import { IoMdMore } from "react-icons/io";
-import { FaRegThumbsUp } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { Comment, User } from "@prisma/client";
 import { useUser } from "@clerk/nextjs";
 import { useOptimistic, useState } from "react";
 import { addPostComment, deletePostComment } from "@/lib/actions";
+import CommentInteraction from "./CommentInteraction";
 
-type CommentWithUser = Comment & { user: User };
+type CommentWithUser = Comment & { user: User } & {
+  likes: { userId: string }[];
+};
 
 function CommentList({
   comments,
@@ -56,10 +58,15 @@ function CommentList({
         website: "",
         createAt: new Date(Date.now()),
       },
+      likes: [],
     });
     try {
       const createdComment = await addPostComment(postId, desc);
-      setCommentState((prev) => [...prev, createdComment]);
+      const createdCommentWithLikes = {
+        ...createdComment,
+        likes: [],
+      };
+      setCommentState((prev) => [...prev, createdCommentWithLikes]);
       setDesc("");
     } catch (error) {
       console.log(error);
@@ -133,21 +140,9 @@ function CommentList({
                   : comment.user.username}
               </span>
               <p className="text-sm">{comment.desc}</p>
-              <div className="flex items-center gap-8 text-xs text-gray-500 mt-2">
-                {/* <LikeButton
-                likes={123}
-                size={12}
-                className={"flex items-center gap-2 cursor-pointer"}
-              /> */}
-                <div className="flex items-center gap-2 cursor-pointer">
-                  <FaRegThumbsUp size={12} color="#0F67B1" />
-                  <span className="text-gray-300">|</span>
-                  <span className="text-gray-500">
-                    123<span className="hidden md:inline"> Likes</span>
-                  </span>
-                </div>
-                <div className="cursor-pointer">Reply</div>
-              </div>
+
+              {/* Comment Interaction */}
+              <CommentInteraction comment={comment} />
             </div>
             {/* Icon */}
             {/* <IoMdMore size={24} color="gray" className="cursor-pointer" /> */}

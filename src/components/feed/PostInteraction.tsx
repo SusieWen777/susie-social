@@ -50,11 +50,6 @@ function PostInteraction({
   return (
     <div className="flex items-center justify-between text-sm my-4">
       <div className="flex gap-8">
-        {/* <LikeButton
-          likes={123}
-          size={16}
-          className="flex items-center gap-2 bg-slate-50 p-2 rounded-xl"
-        /> */}
         <div
           className={`flex items-center gap-2 ${
             optimisticLikeState.isLiked ? "bg-blue-50" : "bg-slate-50"

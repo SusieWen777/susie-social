@@ -349,3 +349,35 @@ export const deleteStory = async (storyId: number) => {
     throw new Error("Something went wrong deleting story!");
   }
 };
+
+export const switchCommentLike = async (commentId: number) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        userId: currentUserId,
+        commentId,
+      },
+    });
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          id: existingLike.id,
+        },
+      });
+    } else {
+      await prisma.like.create({
+        data: {
+          userId: currentUserId,
+          commentId,
+        },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong switching comment like!");
+  }
+};

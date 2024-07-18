@@ -8,7 +8,7 @@ import PostInteraction from "./PostInteraction";
 import { auth } from "@clerk/nextjs/server";
 import DeletePostButton from "./DeletePostButton";
 
-type PostType = PostModel & { user: User } & { likes: [{ userId: string }] } & {
+type PostType = PostModel & { user: User } & { likes: { userId: string }[] } & {
   _count: { comments: number };
 };
 
