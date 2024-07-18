@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { handleDeleteImage } from "./removeImg";
 
 export const switchFollow = async (userId: string) => {
   const { userId: currentUserId } = auth();
@@ -167,12 +168,22 @@ export const updateProfile = async (formData: FormData, cover: string) => {
   if (!currentUserId) throw new Error("Unauthorized user!");
 
   try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: currentUserId,
+      },
+    });
+    const oldCover = user?.cover;
+
     await prisma.user.update({
       where: {
         id: currentUserId,
       },
       data: validatedFields.data,
     });
+
+    // delete old cover image from cloudinary
+    if (oldCover) await handleDeleteImage(oldCover);
   } catch (error) {
     console.log(error);
     throw new Error("Something went wrong updating user profile!");
@@ -272,11 +283,18 @@ export const deletePost = async (postId: number) => {
   if (!currentUserId) throw new Error("Unauthorized user!");
 
   try {
+    const toDeletePost = await prisma.post.findFirst({ where: { id: postId } });
+    if (!toDeletePost) throw new Error("Post not found!");
+
+    const imgUrl = toDeletePost.img;
     await prisma.post.delete({
       where: {
         id: postId,
       },
     });
+    // delete image from cloudinary
+    if (imgUrl) await handleDeleteImage(imgUrl);
+
     revalidatePath("/");
   } catch (error) {
     console.log(error);
@@ -338,11 +356,24 @@ export const deleteStory = async (storyId: number) => {
   if (!currentUserId) throw new Error("Unauthorized user!");
 
   try {
+    const toDeleteStory = await prisma.story.findFirst({
+      where: {
+        id: storyId,
+      },
+    });
+
+    if (!toDeleteStory) throw new Error("Story not found!");
+
+    const imgUrl = toDeleteStory.img;
     await prisma.story.delete({
       where: {
         id: storyId,
       },
     });
+
+    // delete image from cloudinary
+    await handleDeleteImage(imgUrl);
+
     revalidatePath("/");
   } catch (error) {
     console.log(error);

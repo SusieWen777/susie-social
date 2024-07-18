@@ -14,6 +14,7 @@ import { RxCrossCircled } from "react-icons/rx";
 import { CldUploadWidget } from "next-cloudinary";
 import AddPostButton from "./AddPostButton";
 import { addPost } from "@/lib/actions";
+import { handleDeleteImage } from "@/lib/removeImg";
 
 function AddPost() {
   const { user, isLoaded } = useUser();
@@ -150,7 +151,10 @@ function AddPost() {
                 size={12}
                 color="gray"
                 className="cursor-pointer"
-                onClick={() => setImg(null)}
+                onClick={() => {
+                  handleDeleteImage(img.secure_url);
+                  setImg(null);
+                }}
               />
             </div>
           </div>

@@ -111,7 +111,7 @@ function UpdateUser({ user }: { user: User }) {
                     <label htmlFor="">Cover Picture</label>
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Image
-                        src={user.cover || "/noCover.png"}
+                        src={cover?.secure_url || user.cover || "/noCover.png"}
                         alt=""
                         width={48}
                         height={32}
