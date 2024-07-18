@@ -301,3 +301,51 @@ export const deletePostComment = async (commentId: number) => {
     throw new Error("Something went wrong deleting comment!");
   }
 };
+
+export const addStory = async (img: string) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    // a user can only have one story at a time, try to remove the existing one first
+    await prisma.story.deleteMany({
+      where: {
+        userId: currentUserId,
+      },
+    });
+
+    const createdStory = await prisma.story.create({
+      data: {
+        img,
+        userId: currentUserId,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      },
+      include: {
+        user: true,
+      },
+    });
+    return createdStory;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong adding story!");
+  }
+};
+
+export const deleteStory = async (storyId: number) => {
+  const { userId: currentUserId } = auth();
+
+  if (!currentUserId) throw new Error("Unauthorized user!");
+
+  try {
+    await prisma.story.delete({
+      where: {
+        id: storyId,
+      },
+    });
+    revalidatePath("/");
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong deleting story!");
+  }
+};

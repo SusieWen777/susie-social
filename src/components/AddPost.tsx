@@ -135,6 +135,7 @@ function AddPost() {
           </div>
         </div>
 
+        {/* display the chosen image */}
         {img && (
           <div className="relative w-24">
             <Image
