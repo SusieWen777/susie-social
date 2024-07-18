@@ -27,7 +27,7 @@ async function UserMediaCard({ user }: { user: User }) {
         </Link>
       </div>
       {/* Images */}
-      <div className="flex gap-4 justify-between flex-wrap">
+      <div className="flex gap-4 justify-start flex-wrap">
         {postsWithMedia.length
           ? postsWithMedia.map((post, index) => (
               <div key={index} className="relative w-1/5 h-24">

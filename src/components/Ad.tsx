@@ -1,9 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
 import { IoMdMore } from "react-icons/io";
+import { BiHide } from "react-icons/bi";
+import { useState } from "react";
 
 function Ad({ size }: { size: "sm" | "md" | "lg" }) {
+  const [isHide, setIsHide] = useState(false);
   const text =
-    "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.";
+    "SusieFood is your trusted partner for delicious and convenient food delivery. Whether you're craving traditional tastes or modern twists, SusieFood delivers the best meals right to your doorstep, making every meal special.";
 
   const displayedText =
     size === "sm"
@@ -12,12 +18,24 @@ function Ad({ size }: { size: "sm" | "md" | "lg" }) {
       ? text.slice(0, 100)
       : text.slice(0, 200);
 
+  if (isHide) return null;
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md text-sm">
       {/* Title */}
       <div className="flex justify-between items-center font-medium">
         <span className="text-gray-500">Sponsored Ads</span>
-        <IoMdMore size={24} color="gray" className="cursor-pointer" />
+
+        <div className="group relative">
+          <IoMdMore size={24} color="gray" className="cursor-pointer" />
+          <div
+            className="absolute right-0 bg-slate-50 p-2 text-xs text-gray-500 rounded-md z-50 gap-2 items-center font-medium hidden group-hover:flex cursor-pointer"
+            onClick={() => setIsHide(true)}
+          >
+            <BiHide size={14} color="#0F67B1" />
+            <p>Hide</p>
+          </div>
+        </div>
       </div>
       {/* Ad */}
       <div
@@ -49,9 +67,14 @@ function Ad({ size }: { size: "sm" | "md" | "lg" }) {
           {displayedText}
           {displayedText.length < text.length && "..."}
         </p>
-        <button className="bg-gray-200 rounded-md px-4 py-2 text-center text-gray-500">
+        <Link
+          href="https://susie-food-frontend.onrender.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-gray-200 rounded-md px-4 py-2 text-center text-gray-500 hover:bg-blue-500 hover:text-white"
+        >
           Learn More
-        </button>
+        </Link>
       </div>
     </div>
   );
