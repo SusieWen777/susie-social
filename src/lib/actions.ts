@@ -147,7 +147,7 @@ export const updateProfile = async (formData: FormData, cover: string) => {
 
   const Profile = z.object({
     cover: z.string().optional(),
-    name: z.string().max(5).optional(),
+    name: z.string().max(60).optional(),
     surname: z.string().max(60).optional(),
     description: z.string().max(255).optional(),
     city: z.string().max(60).optional(),
@@ -183,7 +183,8 @@ export const updateProfile = async (formData: FormData, cover: string) => {
     });
 
     // delete old cover image from cloudinary
-    if (oldCover) await handleDeleteImage(oldCover);
+    if (oldCover && oldCover !== "/noCover.png")
+      await handleDeleteImage(oldCover);
   } catch (error) {
     console.log(error);
     throw new Error("Something went wrong updating user profile!");

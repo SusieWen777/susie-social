@@ -25,6 +25,9 @@ async function Stories() {
       userId: {
         in: allIds,
       },
+      expiresAt: {
+        gt: new Date(),
+      },
     },
     include: {
       user: true,
