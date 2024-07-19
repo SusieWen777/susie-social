@@ -12,6 +12,11 @@ type PostType = PostModel & { user: User } & { likes: { userId: string }[] } & {
 
 function Post({ post }: { post: PostType }) {
   const { userId: currentUserId } = auth();
+  const formattedDate = post.createdAt.toLocaleString("en-AU", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
   return (
     <div className="flex flex-col gap-4 mt-4 mb-8">
@@ -54,6 +59,7 @@ function Post({ post }: { post: PostType }) {
           </div>
         )}
         <p>{post.desc}</p>
+        <p className="text-xs text-gray-500">{formattedDate}</p>
       </div>
 
       {/* Interaction */}

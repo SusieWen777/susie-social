@@ -327,11 +327,23 @@ export const addStory = async (img: string) => {
 
   try {
     // a user can only have one story at a time, try to remove the existing one first
-    await prisma.story.deleteMany({
+    const existingStory = await prisma.story.findFirst({
       where: {
         userId: currentUserId,
       },
     });
+
+    if (existingStory) {
+      const existingStoryImg = existingStory.img;
+
+      await prisma.story.delete({
+        where: {
+          id: existingStory.id,
+        },
+      });
+
+      await handleDeleteImage(existingStoryImg);
+    }
 
     const createdStory = await prisma.story.create({
       data: {

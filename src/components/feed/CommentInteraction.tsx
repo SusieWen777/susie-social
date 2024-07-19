@@ -13,6 +13,11 @@ type CommentWithUser = Comment & { user: User } & {
 
 function CommentInteraction({ comment }: { comment: CommentWithUser }) {
   const likes = comment.likes.map((like) => like.userId);
+  const formattedDate = comment.createdAt.toLocaleString("en-AU", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
   const { isLoaded, userId: currentUserId } = useAuth();
   const [likeState, setLikeState] = useState({
@@ -67,7 +72,7 @@ function CommentInteraction({ comment }: { comment: CommentWithUser }) {
           <span className="hidden md:inline"> Likes</span>
         </span>
       </div>
-      <div className="cursor-pointer">Reply</div>
+      <div className="cursor-pointer">{formattedDate}</div>
     </div>
   );
 }

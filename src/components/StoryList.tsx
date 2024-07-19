@@ -2,11 +2,13 @@
 
 import { Story, User } from "@prisma/client";
 import Image from "next/image";
-import { useOptimistic, useState } from "react";
+import { useOptimistic, useState, useEffect } from "react";
 import { CldUploadWidget } from "next-cloudinary";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { RxCrossCircled } from "react-icons/rx";
 import { addStory, deleteStory } from "@/lib/actions";
+import { handleDeleteImage } from "@/lib/removeImg";
+import AddStoryButton from "./AddStoryButton";
 
 type StoryWithUser = Story & { user: User };
 
@@ -19,6 +21,16 @@ function StoryList({
 }) {
   const [storyList, setStoryList] = useState(stories);
   const [newStoryImg, setNewStoryImg] = useState<any>();
+  const [existingStoryId, setExistingStoryId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const foundStory = storyList.find((story) => story.userId === userId);
+    if (foundStory) {
+      setExistingStoryId(foundStory.id);
+    } else {
+      setExistingStoryId(null);
+    }
+  }, [storyList]);
 
   const addStorySubmit = async () => {
     if (!newStoryImg.secure_url) return;
@@ -45,7 +57,12 @@ function StoryList({
     });
     try {
       const createdStory = await addStory(newStoryImg.secure_url);
-      setStoryList((prev) => [...prev, createdStory]);
+      setStoryList((prev) => {
+        const updatedList = existingStoryId
+          ? prev.filter((story) => story.id !== existingStoryId)
+          : prev;
+        return [createdStory, ...updatedList];
+      });
       setNewStoryImg(null);
     } catch (error) {
       console.log(error);
@@ -68,7 +85,9 @@ function StoryList({
       if (typeof value === "number") {
         return state.filter((story) => story.id !== value);
       }
-      return [...state, value];
+      return existingStoryId
+        ? [value, ...state.filter((story) => story.id !== existingStoryId)]
+        : [value, ...state];
     }
   );
 
@@ -84,7 +103,7 @@ function StoryList({
       >
         {({ open }) => {
           return (
-            <div className="flex flex-col items-center gap-2 cursor-pointer">
+            <div className="flex flex-col items-center gap-2 cursor-pointer relative">
               {newStoryImg?.secure_url ? (
                 <Image
                   src={newStoryImg?.secure_url}
@@ -102,9 +121,10 @@ function StoryList({
               )}
               {newStoryImg?.secure_url ? (
                 <form action={addStorySubmit}>
-                  <button className="text-xs bg-blue-500 p-1 px-2 rounded-md text-white">
-                    Send
-                  </button>
+                  <AddStoryButton
+                    newStoryImg={newStoryImg}
+                    setNewStoryImg={setNewStoryImg}
+                  />
                 </form>
               ) : (
                 <span className="font-medium">Add Story</span>
@@ -134,16 +154,17 @@ function StoryList({
           </span>
 
           {/* Delete the story */}
-          {story.user.id === userId && (
-            <div className="bg-gray-100 absolute w-5 h-5 flex items-center justify-center rounded-full -top-1 -right-1">
-              <RxCrossCircled
-                size={16}
-                color="gray"
-                className="cursor-pointer"
-                onClick={() => deleteStorySubmit(story.id)}
-              />
-            </div>
-          )}
+          {story.user.id === userId &&
+            story.user.username !== "Sending ... Please wait" && (
+              <div className="bg-gray-100 absolute w-5 h-5 flex items-center justify-center rounded-full -top-1 -right-1">
+                <RxCrossCircled
+                  size={16}
+                  color="gray"
+                  className="cursor-pointer"
+                  onClick={() => deleteStorySubmit(story.id)}
+                />
+              </div>
+            )}
         </div>
       ))}
     </>
