@@ -10,7 +10,7 @@ import UpdateUser from "./UpdateUser";
 
 async function UserInfoCard({ user }: { user: User }) {
   const createdAtDate = new Date(user.createAt);
-  const formattedDate = createdAtDate.toLocaleString("en-US", {
+  const formattedDate = createdAtDate.toLocaleString("en-AU", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -71,12 +71,7 @@ async function UserInfoCard({ user }: { user: User }) {
           </span>
           <span className="text-sm">@{user.username}</span>
         </div>
-        {user.description && (
-          <p>
-            It is a long established fact that a reader will be distracted by
-            the readable content of a page when looking at its layout.
-          </p>
-        )}
+        {user.description && <p>{user.description}</p>}
         {user.city && (
           <div className="flex gap-2 items-center">
             <FaLocationDot color="gray" size={16} />
