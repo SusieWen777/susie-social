@@ -94,7 +94,7 @@ async function ProfilePage({ params }: { params: { username: string } }) {
         </div>
       </div>
       <div className="hidden lg:block w-[30%]">
-        <RightMenu user={user} />
+        <RightMenu user={user} followings={true} />
       </div>
     </div>
   );

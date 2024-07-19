@@ -53,13 +53,7 @@ async function UserInfoCard({ user }: { user: User }) {
       {/* Title */}
       <div className="flex justify-between items-center font-medium">
         <span className="text-gray-500">User Information</span>
-        {currentUserId === user.id ? (
-          <UpdateUser user={user} />
-        ) : (
-          <Link href="/" className="text-blue-500 text-sx">
-            See all
-          </Link>
-        )}
+        {currentUserId === user.id && <UpdateUser user={user} />}
       </div>
       {/* Detailed info */}
       <div className="flex flex-col gap-4 text-gray-500">

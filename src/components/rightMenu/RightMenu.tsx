@@ -1,12 +1,12 @@
 import { User } from "@prisma/client";
 import Ad from "../Ad";
-import Birthdays from "./Birthdays";
+import Followings from "./Followings";
 import FriendRequests from "./FriendRequests";
 import UserInfoCard from "./UserInfoCard";
 import UserMediaCard from "./UserMediaCard";
 import { Suspense } from "react";
 
-function RightMenu({ user }: { user?: User }) {
+function RightMenu({ user, followings }: { user?: User; followings: boolean }) {
   //using userId to differentiate the homepage and profile page
   return (
     <div className="flex flex-col gap-6">
@@ -21,7 +21,7 @@ function RightMenu({ user }: { user?: User }) {
         </>
       ) : null}
       <FriendRequests />
-      <Birthdays />
+      {followings && <Followings />}
       <Ad size="md" />
     </div>
   );
