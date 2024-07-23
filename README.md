@@ -9,6 +9,7 @@ This project is a social networking website designed to allow users to interact 
 - Database: Prisma + Supabase
 - Styling: TailwindCSS
 - Authentication: Clerk
+- Image Storage: Cloudinary
 
 ## Functionalities
 
@@ -19,7 +20,7 @@ This project is a social networking website designed to allow users to interact 
 👉 Story Creation and Deletion: Users can post stories that disappear after 24 hours and delete them when wanted. .  
 👉 Profile Viewing: Users can view other users' profiles and send new or cancel sent friend requests.  
 👉 Friend Request Management: Users can accept or reject friend requests from others.  
-👉 Post Interaction: Users can view, comment on, and like friends' posts.
+👉 Post Interaction: Users can view, comment on, and like friends' posts.  
 👉 Profile Update: Users can update their profiles with new information and photos.
 
 ## Important Notice
